@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class chatRequest(BaseModel):
+    company_name: str
     message: str
     
     
