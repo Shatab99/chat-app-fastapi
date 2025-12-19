@@ -12,6 +12,10 @@ class userRegistrationRequest(BaseModel):
     location: str
     email: str
     password: str
+    
+class userLoginRequest(BaseModel):
+    email: str
+    password: str
 
 
 class chatModel(BaseModel):

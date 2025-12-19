@@ -1,3 +1,9 @@
+from datetime import datetime, timedelta, timezone
+import jwt
+
+SECRET_KEY = "my_secret_key"
+ALGORITHM = "HS256"
+
 def get_knowledge_base_string(knowledge_data):
     # Convert the list of dicts to a clean string format
     context_str = "Knowledge Base (Use this information to answer):\n"
@@ -17,3 +23,17 @@ def format_company_info(company_data):
     for key, value in company_data.items():
         company_info_str += f"{key.capitalize()}: {value}\n"
     return company_info_str
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_access_token(token: str):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return payload
