@@ -24,10 +24,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/test")
-async def test_endpoint():
-    return {"message": "Test endpoint is working!"}
-
+# User Registration
 @app.post("/register")
 async def register_user(request: userRegistrationRequest):
     db_instance = get_database()
@@ -35,6 +32,11 @@ async def register_user(request: userRegistrationRequest):
     result = await users_collection.insert_one(request.dict())
     return {"message": "User registered successfully", "user_id": str(result.inserted_id)}
 
+#User login
+@app.post("/login")
+async def login_user(request: userRegistrationRequest):
+
+# Chat Configuration
 @app.post("/chat-config")
 async def chat_config(request: chatModel):
     db_instance = get_database()
@@ -93,7 +95,7 @@ async def chat_endpoint(request: chatRequest):
         ],
     )
     return {"response": response["message"].content}
-    return {"company_info": shaped_company_info, "chat_config": shaped_chat_config}
+    # return {"company_info": shaped_company_info, "chat_config": shaped_chat_config}
 
 
 if __name__ == "__main__":
