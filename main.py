@@ -1,11 +1,22 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 import uvicorn
-from ai_model_services import chat_endpoint_service
-from schema import chatRequest, chatModel, userLoginRequest, userRegistrationRequest
-from user_services import getProfileService, register_user_service, chat_config_service
+from services.ai_model_services import chat_endpoint_service
+from model.schema import (
+    chatRequest,
+    chatModel,
+    userLoginRequest,
+    userRegistrationRequest,
+)
+from services.user_services import (
+    getProfileService,
+    register_user_service,
+    chat_config_service,
+    get_chat_config_service,
+)
 from contextlib import asynccontextmanager
 from db import connect_to_mongo, close_mongo_connection
-from auth_services import login_service
+from services.auth_services import login_service
+from middleware import ContextMiddleware, verify_token
 
 
 @asynccontextmanager
@@ -20,6 +31,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(ContextMiddleware)
 
 
 @app.get("/")
@@ -38,16 +51,26 @@ async def register_user_endpoint(request: userRegistrationRequest):
 async def login_user(request: userLoginRequest):
     return await login_service(request)
 
+
 @app.get("/profile")
-async def get_profile(token: str):
-    return await getProfileService(token)
-    
+@verify_token()
+async def get_profile(decoded_payload: dict = None):
+    return await getProfileService(decoded_payload)
 
 
 # Chat Configuration
+@app.get("/get-chat-config")
+@verify_token()
+async def get_chat_config_endpoint(decoded_payload: dict = None):
+    return await get_chat_config_service(company_name=decoded_payload["company_name"])
+
+
 @app.post("/chat-config")
-async def chat_config_endpoint(request: chatModel):
-    return await chat_config_service(request)
+@verify_token()
+async def chat_config_endpoint(
+    chat_data: chatModel, decoded_payload: dict = Depends(lambda: None)
+):
+    return await chat_config_service(chat_data, decoded_payload)
 
 
 # User er kaj
@@ -56,7 +79,6 @@ async def chat_config_endpoint(request: chatModel):
 @app.post("/chat")
 async def chat_endpoint(request: chatRequest):
     return await chat_endpoint_service(request)
-    
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from schema import userLoginRequest
+from model.schema import userLoginRequest
 from db import get_database
 from helpers import  create_access_token as create_unique_token,verify_access_token
 

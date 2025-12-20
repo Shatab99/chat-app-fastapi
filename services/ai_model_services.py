@@ -1,6 +1,6 @@
 from db import get_database
 from helpers import format_company_info, get_knowledge_base_string
-from schema import chatRequest
+from model.schema import chatRequest
 import ollama
 
 async def chat_endpoint_service(request: chatRequest):

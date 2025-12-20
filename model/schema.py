@@ -19,6 +19,5 @@ class userLoginRequest(BaseModel):
 
 
 class chatModel(BaseModel):
-    company_name: str
     question: str
     answer: str
