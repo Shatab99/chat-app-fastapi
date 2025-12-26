@@ -5,7 +5,9 @@ from model.schema import userRegistrationRequest, chatModel
 async def register_user_service(request: userRegistrationRequest):
     db_instance = get_database()
     users_collection = db_instance.get_collection("users")
-    result = await users_collection.insert_one(request.dict())
+    newUser = request.dict()
+    newUser["isSubscribed"] = False
+    result = await users_collection.insert_one(newUser)
     return {
         "message": "User registered successfully",
         "user_id": str(result.inserted_id),

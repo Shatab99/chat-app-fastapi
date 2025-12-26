@@ -16,6 +16,8 @@ from services.user_services import (
 from contextlib import asynccontextmanager
 from db import connect_to_mongo, close_mongo_connection
 from services.auth_services import login_service
+from services.payment import subscribe_user_service
+from services.api_key import create_api_key_service
 from middleware import ContextMiddleware, verify_token
 
 
@@ -56,6 +58,20 @@ async def login_user(request: userLoginRequest):
 @verify_token()
 async def get_profile(decoded_payload: dict = None):
     return await getProfileService(decoded_payload)
+
+# subscribe user
+@app.post("/subscribe-me")
+@verify_token()
+async def subscribe_user(decoded_payload: dict = None):
+    email = decoded_payload.get("email")
+    return await subscribe_user_service(email)
+
+# Generate api key
+@app.post("/add-api-key")
+@verify_token()
+async def add_api_key(decoded_payload: dict = None):
+    email = decoded_payload.get("email")
+    return await create_api_key_service(email)
 
 
 # Chat Configuration
