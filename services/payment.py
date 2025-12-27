@@ -9,6 +9,17 @@ async def subscribe_user_service(email: str):
     db_instance = get_database()
     users_collection = db_instance.get_collection("users")
     user_subscription = db_instance.get_collection("subscriptions")
+    
+    # Renew subscription for existing subscribed users
+    existing_subscription = await user_subscription.find_one({"user_email": email})
+    if existing_subscription:
+        new_end_date = existing_subscription["subscription_end_date"] + timedelta(days=30)
+        await user_subscription.update_one(
+            {"user_email": email},
+            {"$set": {"subscription_end_date": new_end_date}}
+        )
+        return {"message": "Subscription renewed successfully"}
+    
     result = await users_collection.update_one(
         {"email": email}, {"$set": {"isSubscribed": True}}
     )
