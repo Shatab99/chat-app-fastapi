@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Query
 import uvicorn
 from services.ai_model_services import chat_endpoint_service
 from model.schema import (
@@ -93,9 +93,9 @@ async def chat_config_endpoint(
 
 
 @app.post("/chat")
-async def chat_endpoint(request: chatRequest):
-    return await chat_endpoint_service(request)
+async def chat_endpoint(request: chatRequest, api: str = Query(..., description="API Key provided in URL")):
+    return await chat_endpoint_service(request, api)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=7008, reload=True)

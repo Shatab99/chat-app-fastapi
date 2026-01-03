@@ -28,7 +28,7 @@ async def create_api_key_service(email: str):
         return {"message": "Subscription has ended. Please renew to get a new API key."}
     
     # step 4 : generate unique api key and save it to subscriptions collection
-    new_api_key ="".join(random.choices(string.ascii_letters + string.digits, k=20))
+    new_api_key ="Ar" + "".join(random.choices(string.ascii_letters + string.digits, k=18))
     if_api_key_exist = await subs_collection.find_one({"api_key": new_api_key})
     if if_api_key_exist:
         return {"message": "API key generation failed, try again"}
